@@ -14,6 +14,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/auth', authRoutes);
+app.use('/', authRoutes);
 
 // This should be your last middleware
 app.all('*', (req, res) => {

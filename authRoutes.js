@@ -46,4 +46,34 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.get('/getEvents', async (req, res) => {
+  const { userId } = req.query;  // Assuming userId is passed as a query parameter
+  try {
+    const query = `SELECT * FROM Events WHERE UserId = @param0`;
+    const events = await db.executeQuery(query, [userId]);
+    
+    if (events.length === 0) {
+      return res.status(200).json({ message: 'No events found', events: [] });
+    }
+    
+    res.status(200).json({ events });
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+router.post('/addEvent', async (req, res) => {
+  const { userId, eventName, eventDate, eventType } = req.body;
+  try {
+    const query = `INSERT INTO Events (UserId, EventName, EventDate, EventType) VALUES (@param0, @param1, @param2, @param3)`;
+    const result = await db.executeQuery(query, [userId, eventName, eventDate, eventType]);
+    res.status(200).json({ message: 'Event added successfully' });
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 module.exports = router;
